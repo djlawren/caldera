@@ -55,7 +55,7 @@ class LearningService(LearningServiceInterface, BaseService):
         fact.origin_type = OriginType.LEARNED
         fact.source = operation.id if operation else link.id
         if all(fact.trait) and not any(fact == f for f in facts):
-            fact.collected_by = link.paw
+            fact.collected_by = [link.paw]
             fact.technique_id = link.ability.technique_id
             fact.links = [link]
             fact.relationships = []

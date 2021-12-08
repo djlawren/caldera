@@ -272,7 +272,7 @@ class Link(BaseObject):
                     source = operation.source.id
             fact.source = source  # Manual addition to ensure the check works correctly
             if not await knowledge_svc_handle.check_fact_exists(fact, all_facts):
-                f_gen = Fact(trait=fact.trait, value=fact.value, source=source, score=score, collected_by=self.paw,
+                f_gen = Fact(trait=fact.trait, value=fact.value, source=source, score=score, collected_by=[self.paw],
                              technique_id=self.ability.technique_id, links=[self.id], relationships=rl,
                              origin_type=OriginType.LEARNED)
                 self.facts.append(f_gen)
@@ -285,10 +285,13 @@ class Link(BaseObject):
                     existing_fact.links.append(self.id)
                 if relationship not in existing_fact.relationships:
                     existing_fact.relationships.append(relationship)
+                if self.paw not in existing_fact.collected_by:
+                    existing_fact.collected_by.append(self.paw)
                 await knowledge_svc_handle.update_fact(criteria=dict(trait=fact.trait, value=fact.value,
                                                                      source=fact.source),
                                                        updates=dict(links=existing_fact.links,
-                                                                    relationships=existing_fact.relationships))
+                                                                    relationships=existing_fact.relationships,
+                                                                    collected_by=existing_fact.collected_by))
                 existing_local_record = [x for x in self.facts if x.trait == fact.trait and x.value == fact.value]
                 if existing_local_record:
                     existing_local_record[0].links = existing_fact.links
